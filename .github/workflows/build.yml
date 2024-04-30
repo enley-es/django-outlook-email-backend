@@ -1,8 +1,6 @@
 name: pypi_publish
-on:
-  push:
-    branches:
-      - main
+on: push
+
 jobs:
   build:
     name: Build distribution 📦
@@ -47,3 +45,4 @@ jobs:
           path: dist/
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
