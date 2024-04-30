@@ -2,3 +2,4 @@ build
 dist
 .idea
 django_outlook_email_backend.egg-info
+.env
