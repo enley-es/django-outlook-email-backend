@@ -75,12 +75,12 @@ class OutlookOauth2EmailBackend(EmailBackend):
             }
         }
         response = requests.post(
-            "/users/"+from_email+"/sendMail",
+            "https://graph.microsoft.com/v1.0/users/"+from_email+"/sendMail",
             json=data,
 
             headers={"Authorization": "Bearer " + self.access_token},
         )
-
+        print(response)
         return True
 
 
