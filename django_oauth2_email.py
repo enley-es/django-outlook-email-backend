@@ -1,6 +1,5 @@
 from django.core.mail.backends.smtp import EmailBackend
 import msal
-import environ
 import requests
 from django.core.mail.message import sanitize_address
 from django.conf import settings
@@ -8,17 +7,12 @@ from django.conf import settings
 
 
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
-environ.Env.read_env()
 
 class OutlookOauth2EmailBackend(EmailBackend):
 
     access_token = None
-    client_id = env("outlook_client_id")
-    client_secret = env("outlook_client_secret")
+    client_id = settings.OUTLOOK_CLIENT_ID
+    client_secret = settings.OUTLOOK_CLIENT_SECRET
 
     def send_messages(self, email_messages):
         self._set_access_token()
