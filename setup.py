@@ -19,4 +19,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
+    url='https://github.com/enley-es/django-outlook-email-backend',
 )
