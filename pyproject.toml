@@ -1,5 +1,5 @@
 
-[poetry]
+[tool.poetry]
 name='django-outlook-email-backend'
 version='0.1'
 description='Ouauth2 outlook email backend for Django'
