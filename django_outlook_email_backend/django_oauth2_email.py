@@ -13,6 +13,7 @@ class OutlookOauth2EmailBackend(EmailBackend):
     access_token = None
     client_id = settings.OUTLOOK_CLIENT_ID
     client_secret = settings.OUTLOOK_CLIENT_SECRET
+    tenant_id = settings.OUTLOOK_TENANT_ID
 
     def send_messages(self, email_messages):
         self._set_access_token()
