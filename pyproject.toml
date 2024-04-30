@@ -4,10 +4,8 @@ name='django-outlook-email-backend'
 version='0.1'
 description='Ouauth2 outlook email backend for Django'
 readme = "README.md"
-author='Marc Claramunt'
-author_email='mclaramunt@enley.com'
+authors= ['Marc Claramunt']
 license='MIT'
-zip_safe="True"
 classifiers=[
     'Environment :: Web Environment',
     'Framework :: Django',
