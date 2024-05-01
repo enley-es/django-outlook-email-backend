@@ -12,11 +12,11 @@ pip install django-outlook-email-backend
 ```
 Add  `'OUTLOOK_CREDENTIALS'` in `'settings.py'`  
 ```python
-OUTLOOK_CREDENTIALS = [
+OUTLOOK_CREDENTIALS = {
     'OUTLOOK_CLIENT_ID': "XXXXX",
     'OUTLOOK_CLIENT_SECRET': "XXXXX",
     'OUTLOOK_TENANT_ID': "XXXXX",
-]
+}
 ```
 
 Add  `'EMAIL_BACKEND'` in `'settings.py'`  
