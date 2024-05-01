@@ -19,7 +19,6 @@ class OutlookEmailBackend(BaseEmailBackend):
 
     def send_messages(self, email_messages):
         self._set_access_token()
-
         if not email_messages:
             return 0
         num_sent = 0
