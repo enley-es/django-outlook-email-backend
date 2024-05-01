@@ -19,8 +19,7 @@ OUTLOOK_CREDENTIALS = [
 ]
 ```
 
-Add  `'EMAIL_BACKEND'` 
-'` in `'settings.py'`  
+Add  `'EMAIL_BACKEND'` in `'settings.py'`  
 
 ```python
 EMAIL_BACKEND = "django_outlook_email.django_outlook_email_backend.OutlookEmailBackend"
