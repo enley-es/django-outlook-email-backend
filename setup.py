@@ -1,8 +1,8 @@
 from distutils.core import setup
 
 setup(
-    name='django-outlook-email-backend',
-    version='0.3.8',
+    name='django_outlook_email-backend',
+    version='0.3.9',
     description='Ouauth2 outlook email backend for Django',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -20,4 +20,6 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     url='https://github.com/enley-es/django-outlook-email-backend',
+    packages=["django_outlook_email","django_outlook_email.exceptions"],
+    install_requires = ['requests~=2.25', 'msal==1.*']
 )
