@@ -17,7 +17,7 @@ class OutlookEmailBackend(BaseEmailBackend):
     client_id = settings.OUTLOOK_CREDENTIALS["OUTLOOK_CLIENT_ID"]
     client_secret = settings.OUTLOOK_CREDENTIALS["OUTLOOK_CLIENT_SECRET"]
     tenant_id = settings.OUTLOOK_CREDENTIALS["OUTLOOK_TENANT_ID"]
-    send_format = settings.OUTLOOK_CREDENTIALS["OUTLOOK_SEND_FORMAT"]
+    send_format = settings.OUTLOOK_CREDENTIALS.get("OUTLOOK_SEND_FORMAT")
 
 
     def send_messages(self, email_messages):
