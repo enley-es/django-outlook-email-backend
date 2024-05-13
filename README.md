@@ -25,7 +25,7 @@ Add  `'EMAIL_BACKEND'` in `settings.py`
 EMAIL_BACKEND = "django_outlook_email.django_outlook_email_backend.OutlookEmailBackend"
 ``` 
 
-if you want to use json instead of mime the add the following line in in `settings.py`
+if you want to use json instead of mime  add the following line in `settings.py`
 ```python
 OUTLOOK_CREDENTIALS["OUTLOOK_SEND_FORMAT"] = "json"
 ```
