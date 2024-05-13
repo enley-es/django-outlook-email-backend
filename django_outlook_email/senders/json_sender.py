@@ -22,6 +22,9 @@ class JsonSender(BaseSender):
 
         content, content_type = self._get_content_and_content_type(email_message)
 
+        if not content:
+            return False
+
         data = {
             "message": {
                 "body": {
