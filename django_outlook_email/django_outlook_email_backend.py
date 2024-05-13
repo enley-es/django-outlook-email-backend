@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 
 from django_outlook_email.exceptions.microsoft_graph_exceptions import MicrosoftGraphException
+from django_outlook_email.senders.json_sender import JsonSender
+from django_outlook_email.senders.mime_sender import MimeSender
 
 
 class OutlookEmailBackend(BaseEmailBackend):
@@ -15,6 +17,7 @@ class OutlookEmailBackend(BaseEmailBackend):
     client_id = settings.OUTLOOK_CREDENTIALS["OUTLOOK_CLIENT_ID"]
     client_secret = settings.OUTLOOK_CREDENTIALS["OUTLOOK_CLIENT_SECRET"]
     tenant_id = settings.OUTLOOK_CREDENTIALS["OUTLOOK_TENANT_ID"]
+    send_format = settings.OUTLOOK_CREDENTIALS["OUTLOOK_SEND_FORMAT"]
 
 
     def send_messages(self, email_messages):
@@ -43,30 +46,9 @@ class OutlookEmailBackend(BaseEmailBackend):
 
 
     def _send(self, email_message):
-        if not email_message.recipients():
-            return False
-        encoding = email_message.encoding or settings.DEFAULT_CHARSET
-        from_email = sanitize_address(email_message.from_email, encoding)
-
-        message = email_message.message()
-
-        try:
-            response = requests.post(
-                "https://graph.microsoft.com/v1.0/users/"+from_email+"/sendMail",
-                data=base64.b64encode(message.as_bytes(linesep="\r\n")),
-
-                headers={"Authorization": "Bearer " + self.access_token, "Content-type": "text/plain"}
-            )
-        except requests.exceptions.RequestException:
-            if not self.fail_silently:
-                raise
-            return False
-
-        if response.status_code == 202:
-            return True
+        if self.send_format == "json":
+            sender = JsonSender(self.access_token, self.fail_silently)
         else:
-            if not self.fail_silently:
-                raise MicrosoftGraphException(response.status_code, response.content)
-            return False
-
+            sender = MimeSender(self.access_token, self.fail_silently)
+        sender.send(email_message)
 

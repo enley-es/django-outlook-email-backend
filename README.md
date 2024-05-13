@@ -10,7 +10,7 @@ Install using pip...
 ```commandline
 pip install django-outlook-email-backend
 ```
-Add  `'OUTLOOK_CREDENTIALS'` in `'settings.py'`  
+Add  `'OUTLOOK_CREDENTIALS'` in `settings.py`  
 ```python
 OUTLOOK_CREDENTIALS = {
     'OUTLOOK_CLIENT_ID': "XXXXX",
@@ -19,8 +19,13 @@ OUTLOOK_CREDENTIALS = {
 }
 ```
 
-Add  `'EMAIL_BACKEND'` in `'settings.py'`  
+Add  `'EMAIL_BACKEND'` in `settings.py`  
 
 ```python
 EMAIL_BACKEND = "django_outlook_email.django_outlook_email_backend.OutlookEmailBackend"
 ``` 
+
+if you want to use json instead of mime the add the following line in in `settings.py`
+```python
+OUTLOOK_CREDENTIALS["OUTLOOK_SEND_FORMAT"] = "json"
+```
