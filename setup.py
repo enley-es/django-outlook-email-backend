@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='django_outlook_email-backend',
-    version='1.1.2',
+    version='1.1.3',
     description='Ouauth2 outlook email backend for Django',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',

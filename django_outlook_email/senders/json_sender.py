@@ -3,7 +3,7 @@ import mimetypes
 from email.mime.base import MIMEBase
 
 from django.conf import settings
-from django_outlook_email.exceptions.microsoft_graph_exceptions import JsonSenderException
+from django_outlook_email.exceptions.microsoft_graph_exceptions import JsonSenderException, MicrosoftGraphException
 from django_outlook_email.senders.base_sender import BaseSender
 from django.core.mail.message import sanitize_address
 import requests
@@ -38,15 +38,25 @@ class JsonSender(BaseSender):
         if attachments:
             data["message"]["hasAttachments"] = True
             data["message"]["attachments"] = attachments
-        print(data)
-        response = requests.post(
-            "https://graph.microsoft.com/v1.0/users/" + from_email + "/sendMail",
-            json=data,
+        try:
+            response = requests.post(
+                "https://graph.microsoft.com/v1.0/users/" + from_email + "/sendMail",
+                json=data,
 
-            headers={"Authorization": "Bearer " + self.access_token},
-        )
+                headers={"Authorization": "Bearer " + self.access_token},
+            )
+        except requests.exceptions.RequestException:
+            if not self.fail_silently:
+                raise
+            return False
 
-        return True
+        if response.status_code == 202:
+            return True
+        else:
+            if not self.fail_silently:
+                raise MicrosoftGraphException(response.status_code, response.content)
+            return False
+
 
     def _get_content_and_content_type(self, email_message):
         alternatives = self._get_alternatives(email_message)
@@ -68,11 +78,14 @@ class JsonSender(BaseSender):
             elif alternative[1] == "text/html":
                 html_alternatives.append(alternative[0])
             else:
-                raise JsonSenderException("Only text/plain and text/html alternatives are supported")
+                if self.fail_silently:
+                    return []
+                else:
+                    raise JsonSenderException("Only text/plain and text/html alternatives are supported")
 
-        if len(text_plain_alternatives) > 1:
+        if len(text_plain_alternatives) > 1 and not self.fail_silently:
             raise JsonSenderException("Only one text/plain alternative is supported")
-        if len(html_alternatives) > 1:
+        if len(html_alternatives) > 1 and not self.fail_silently:
             raise JsonSenderException("Only one text/html alternative is supported")
 
         return html_alternatives if html_alternatives else text_plain_alternatives
