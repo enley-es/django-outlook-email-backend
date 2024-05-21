@@ -21,7 +21,7 @@ class MimeSender(BaseSender):
 
         try:
             response = requests.post(
-                "https://graph.microsoft.com/v1.0/users/" + from_email + "/sendMail",
+                "https://outlook.office365.com/v1.0/users/" + from_email + "/sendMail",
                 data=base64.b64encode(message.as_bytes(linesep="\r\n")),
 
                 headers={"Authorization": "Bearer " + self.access_token, "Content-type": "text/plain"}
