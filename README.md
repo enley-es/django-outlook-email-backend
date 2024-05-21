@@ -1,6 +1,10 @@
 # Django outlook email backend
 ### Outlook api email backend for Django
 
+## First steps
+Retrieve the client id, client secret and tenant id from the Azure portal. Follow this steps:https://learn.microsoft.com/en-us/industry/retail/intelligent-recommendations/quickstart-endpoint
+Add the Mail.send permision to the app in the Azure portal.
+
 ## Requirements
 - Python 3.8+
 - Django 5.0, 4.2

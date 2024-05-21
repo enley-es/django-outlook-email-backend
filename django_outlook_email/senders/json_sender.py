@@ -1,12 +1,14 @@
 import base64
-import mimetypes
 from email.mime.base import MIMEBase
 
 from django.conf import settings
 from django_outlook_email.exceptions.microsoft_graph_exceptions import JsonSenderException, MicrosoftGraphException
+from django_outlook_email.senders.attachments.attachments_using_upload_session import UploadAttachment
 from django_outlook_email.senders.base_sender import BaseSender
 from django.core.mail.message import sanitize_address
-import requests
+
+from django_outlook_email.senders.microsoft_requests.microsoft_requests import MicrosoftRequests
+
 
 class JsonSender(BaseSender):
 
@@ -37,28 +39,57 @@ class JsonSender(BaseSender):
             }
         }
 
+        return self._send_email(data, from_email, email_message)
+
+    def _send_email(self, data, from_email, email_message):
+        for attachment in email_message.attachments:
+
+            # Check if the size of the attachment is greater than 3MB
+            if len(attachment) > 3 * 1024 * 1024:
+                return self._send_message_using_upload_session(data, from_email, email_message)
+            else:
+                pass
+
+        return self._send_message_using_single_post(data, from_email, email_message)
+
+    def _upload_attachment(self, attachment, message_id, from_email, file_name):
+        upload_attachment = UploadAttachment(self.access_token, self.fail_silently, from_email)
+        return upload_attachment.create(message_id, attachment, file_name)
+    def _send_message_using_upload_session(self, data, from_email, email_message):
+        microsoft_request = MicrosoftRequests(from_email, self.access_token, self.fail_silently)
+        data["message"]["hasAttachments"] = True
+        response = microsoft_request.post('messages', data.get("message"))
+        if response:
+            message_id = response.json()['id']
+            for attachment in email_message.attachments:
+                if isinstance(attachment, MIMEBase):
+                    attachment = attachment
+                    file_name = attachment.get_filename()
+                else:
+                    attachment = attachment[1]
+                    file_name = attachment[0]
+                    print(file_name)
+                self._upload_attachment(attachment, message_id, from_email, file_name)
+            microsoft_request = MicrosoftRequests(from_email, self.access_token, self.fail_silently)
+            if microsoft_request.post(f'messages/{message_id}/send', data):
+                return True
+            else:
+                return False
+        return False
+
+
+    def _send_message_using_single_post(self, data, from_email, email_message):
         attachments = self._get_attachments(email_message)
         if attachments:
             data["message"]["hasAttachments"] = True
             data["message"]["attachments"] = attachments
-        try:
-            response = requests.post(
-                "https://graph.microsoft.com/v1.0/users/" + from_email + "/sendMail",
-                json=data,
 
-                headers={"Authorization": "Bearer " + self.access_token},
-            )
-        except requests.exceptions.RequestException:
-            if not self.fail_silently:
-                raise
-            return False
-
-        if response.status_code == 202:
+        microsoft_request = MicrosoftRequests(from_email, self.access_token, self.fail_silently)
+        if microsoft_request.post('sendMail', data):
             return True
         else:
-            if not self.fail_silently:
-                raise MicrosoftGraphException(response.status_code, response.content)
             return False
+
 
 
     def _get_content_and_content_type(self, email_message):
