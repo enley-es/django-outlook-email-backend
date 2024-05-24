@@ -7,6 +7,7 @@ from django_outlook_email.senders.attachments.attachments_using_upload_session i
 from django_outlook_email.senders.base_sender import BaseSender
 from django.core.mail.message import sanitize_address
 
+from django_outlook_email.senders.content_types import MicrosoftContentType
 from django_outlook_email.senders.microsoft_requests.microsoft_requests import MicrosoftRequests
 
 
@@ -31,7 +32,7 @@ class JsonSender(BaseSender):
             "message": {
                 "body": {
                     "content": content,
-                    "contentType": "HTML"  # text/html #plain
+                    "contentType": content_type  # text/html #plain
                 },
                 "subject": email_message.subject,
                 "toRecipients": recipients,
@@ -101,7 +102,7 @@ class JsonSender(BaseSender):
             content = email_message.body
             content_type = email_message.content_subtype
 
-        return content, content_type
+        return content, MicrosoftContentType.django_to_microsoft(content_type)
 
     def _get_alternatives(self, email_message):
         html_alternatives = []

@@ -1,7 +1,7 @@
 from enum import Enum
 
 class ContentType(Enum):
-    TEXT_PLAIN = "text/plain"
+    TEXT_PLAIN = "plain"
     TEXT_HTML = "text/html"
 
 class MicrosoftContentType(Enum):

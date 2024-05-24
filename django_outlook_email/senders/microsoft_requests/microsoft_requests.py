@@ -1,5 +1,10 @@
+import json
+
 from django_outlook_email.exceptions.microsoft_graph_exceptions import MicrosoftGraphException
 import requests
+
+from django_outlook_email.senders.encoders.lazy_encoders import LazyEncoder
+
 
 class MicrosoftRequests:
     def __init__(self, from_email, access_token, fail_silently):
@@ -8,12 +13,13 @@ class MicrosoftRequests:
         self.fail_silently = fail_silently
 
     def post(self, endpoint, data):
+        data = json.dumps(data, cls=LazyEncoder)
         try:
             response = requests.post(
                 "https://graph.microsoft.com/v1.0/users/" + self.from_email + "/" + endpoint,
-                json=data,
+                data=data,
 
-                headers={"Authorization": "Bearer " + self.access_token},
+                headers={"Authorization": "Bearer " + self.access_token, 'Content-Type': 'application/json'},
             )
         except requests.exceptions.RequestException:
             if not self.fail_silently:
