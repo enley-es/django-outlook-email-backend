@@ -132,7 +132,7 @@ class JsonSender(BaseSender):
                 attachments.append({
                     "@odata.type": "#microsoft.graph.fileAttachment",
                     "name": attachment.get_filename(),
-                    "contentBytes":  attachment.get_payload(decode=True),
+                    "contentBytes":  base64.b64encode(attachment.get_payload(decode=True)).decode('utf-8'),
                     "contentType": attachment.get_content_type(),
                 })
             else:
