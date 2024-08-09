@@ -4,6 +4,7 @@ from django_outlook_email.exceptions.microsoft_graph_exceptions import Microsoft
 import requests
 
 from django_outlook_email.senders.encoders.lazy_encoders import LazyEncoder
+from requests.adapters import HTTPAdapter, Retry
 
 
 class MicrosoftRequests:
@@ -15,7 +16,12 @@ class MicrosoftRequests:
     def post(self, endpoint, data):
         data = json.dumps(data, cls=LazyEncoder)
         try:
-            response = requests.post(
+
+            session = requests.Session()
+            retries = Retry(total=5, backoff_factor=1, status_forcelist=[500])
+            session.mount('https://', HTTPAdapter(max_retries=retries))
+
+            response = session.post(
                 "https://graph.microsoft.com/v1.0/users/" + self.from_email + "/" + endpoint,
                 data=data,
 
