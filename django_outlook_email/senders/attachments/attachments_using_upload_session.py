@@ -2,6 +2,8 @@ import requests
 
 from django_outlook_email.exceptions.microsoft_graph_exceptions import MicrosoftGraphException
 from django_outlook_email.senders.microsoft_requests.microsoft_requests import MicrosoftRequests
+from requests.adapters import HTTPAdapter, Retry
+
 
 
 class UploadAttachment:
@@ -48,7 +50,15 @@ class UploadAttachment:
             print(f'Uploading chunk {chunk_number + 1} of {file_size / self.CHUNK_SIZE}')
 
             try:
-                response = requests.put(upload_url, headers=headers, data=chunk)
+                session = requests.Session()
+                retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504],)
+                session.mount('https://', HTTPAdapter(max_retries=retries))
+
+                response = session.put(
+                    upload_url,
+                    headers = headers,
+                    data = chunk
+                )
             except requests.exceptions.RequestException:
                 if not self.fail_silently:
                     raise
