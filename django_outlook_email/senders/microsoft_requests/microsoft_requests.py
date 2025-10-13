@@ -18,7 +18,7 @@ class MicrosoftRequests:
         try:
 
             session = requests.Session()
-            retries = Retry(total=5, backoff_factor=1, status_forcelist=[500])
+            retries = Retry(total=5, backoff_factor=1, status_forcelist=[500,429])
             session.mount('https://', HTTPAdapter(max_retries=retries))
 
             response = session.post(
